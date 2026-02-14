@@ -20,6 +20,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'haggadah-server.html'));
 });
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', users: users.size, photos: photos.length });
+});
+
 // WebSocket connection handler
 wss.on('connection', (ws) => {
     const userId = uuidv4();
@@ -154,8 +159,9 @@ function broadcast(data) {
     });
 }
 
+// Use Railway's PORT or default to 3000
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`🫓 Vitkon Haggadah Server running on port ${PORT}`);
-    console.log(`🌐 Open http://localhost:${PORT} in your browser`);
+    console.log(`🌐 Server is ready to accept connections`);
 });
