@@ -17,7 +17,7 @@ app.use(express.static(__dirname));
 
 // Serve the haggadah
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'haggadah-server.html'));
+    res.sendFile(path.join(__dirname, 'haggadah.html'));
 });
 
 // Health check endpoint for Railway
