@@ -17,7 +17,7 @@ app.use(express.static(__dirname));
 
 // Serve the haggadah
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'haggadah.html'));
+    res.sendFile(path.join(__dirname, 'haggadah-server.html'));
 });
 
 // Health check endpoint for Railway
@@ -88,7 +88,8 @@ wss.on('connection', (ws) => {
                         id: uuidv4(),
                         url: data.url,
                         caption: data.caption,
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(),
+                        reactions: {}
                     };
                     photos.push(photo);
 
@@ -104,6 +105,33 @@ wss.on('connection', (ws) => {
                     });
 
                     console.log(`New photo uploaded by ${data.caption}`);
+                    break;
+
+                case 'PHOTO_REACTION':
+                    // Find the photo and update reactions
+                    const targetPhoto = photos.find(p => p.id === data.photoId);
+                    if (targetPhoto) {
+                        if (!targetPhoto.reactions) {
+                            targetPhoto.reactions = {};
+                        }
+                        
+                        // Toggle reaction
+                        if (targetPhoto.reactions[data.userName] === data.emoji) {
+                            delete targetPhoto.reactions[data.userName];
+                        } else {
+                            targetPhoto.reactions[data.userName] = data.emoji;
+                        }
+
+                        // Broadcast reaction update to all clients
+                        broadcast({
+                            type: 'PHOTO_REACTION',
+                            photoId: data.photoId,
+                            userName: data.userName,
+                            emoji: data.emoji
+                        });
+
+                        console.log(`${data.userName} reacted ${data.emoji} to photo ${data.photoId}`);
+                    }
                     break;
 
                 case 'RESET_APP':
