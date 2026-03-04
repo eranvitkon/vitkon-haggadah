@@ -11,18 +11,33 @@ const wss = new WebSocket.Server({ server });
 // Store connected users and their data
 const users = new Map();
 const photos = [];
+const errorLogs = []; // Store client error logs
+const MAX_ERROR_LOGS = 200;
 
 // Serve static files
 app.use(express.static(__dirname));
 
 // Serve the haggadah
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'haggadah.html'));
+    res.sendFile(path.join(__dirname, 'haggadah-server.html'));
 });
 
 // Health check endpoint for Railway
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', users: users.size, photos: photos.length });
+    res.status(200).json({ 
+        status: 'ok', 
+        users: users.size, 
+        photos: photos.length,
+        errors: errorLogs.length 
+    });
+});
+
+// Error logs endpoint (for debugging)
+app.get('/errors', (req, res) => {
+    res.status(200).json({ 
+        errors: errorLogs.slice(-50), // Last 50 errors
+        total: errorLogs.length 
+    });
 });
 
 // WebSocket connection handler
@@ -149,6 +164,46 @@ wss.on('connection', (ws) => {
 
                         console.log('App reset by admin');
                     }
+                    break;
+
+                case 'USER_DISCONNECT':
+                    // User explicitly disconnecting (closing tab/browser)
+                    const disconnectUser = users.get(userId);
+                    if (disconnectUser) {
+                        users.delete(userId);
+
+                        // Broadcast user left
+                        broadcast({
+                            type: 'USER_LEFT',
+                            userId: userId
+                        });
+
+                        console.log(`User disconnected: ${disconnectUser.name}`);
+                    }
+                    break;
+
+                case 'ERROR_LOG':
+                    // Store error log from client
+                    const errorEntry = {
+                        ...data.log,
+                        userId: userId,
+                        serverTimestamp: new Date().toISOString()
+                    };
+                    
+                    errorLogs.push(errorEntry);
+                    
+                    // Keep only recent errors
+                    if (errorLogs.length > MAX_ERROR_LOGS) {
+                        errorLogs.shift();
+                    }
+                    
+                    // Log to server console
+                    console.error('📱 CLIENT ERROR:', {
+                        user: errorEntry.user,
+                        context: errorEntry.context,
+                        message: errorEntry.error?.message,
+                        page: errorEntry.page
+                    });
                     break;
             }
         } catch (error) {
