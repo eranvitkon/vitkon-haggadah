@@ -166,6 +166,22 @@ wss.on('connection', (ws) => {
                     }
                     break;
 
+                case 'ADMIN_RESET':
+                    // Admin reset - clear everything and force logout all users
+                    console.log(`Admin reset initiated by: ${data.admin}`);
+                    
+                    // Clear all data
+                    users.clear();
+                    photos.length = 0;
+                    
+                    // Force all clients to logout and reload
+                    broadcast({
+                        type: 'FORCE_LOGOUT'
+                    });
+                    
+                    console.log('All users logged out, all photos cleared');
+                    break;
+
                 case 'USER_DISCONNECT':
                     // User explicitly disconnecting (closing tab/browser)
                     const disconnectUser = users.get(userId);
