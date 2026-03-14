@@ -61,9 +61,13 @@ app.get('/', (req, res) => {
 app.post('/upload', upload.single('photo'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file' });
   const uploader = req.body.name || 'אורח';
+  const avatarId = parseInt(req.body.avatarId) || 1;
+  const pageId = req.body.pageId || 'general';
   const photoEntry = {
     url: '/uploads/' + req.file.filename,
     uploadedBy: uploader,
+    avatarId: avatarId,
+    pageId: pageId,
     timestamp: new Date().toISOString()
   };
   photoWall.push(photoEntry);

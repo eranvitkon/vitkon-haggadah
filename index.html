@@ -583,6 +583,81 @@ html, body {
 }
 .conn-badge.connected { background: #22C55E; }
 
+
+/* ── Page image ───────────────────────────────────────────────────────────── */
+.page-image-wrap {
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  background: var(--warm);
+  border: 1px solid var(--border);
+}
+.page-img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 420px;
+}
+
+/* ── Per-page upload section ─────────────────────────────────────────────── */
+.page-upload-section { margin-top: 1.5rem; }
+.page-upload-trigger { cursor: pointer; }
+
+.page-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+.page-photo-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: zoom-in;
+}
+.page-photo-card img {
+  width: 100%; 
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--trans);
+}
+.page-photo-card:hover img { transform: scale(1.04); }
+.page-photo-owner {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.65));
+  padding: 0.5rem 0.4rem 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  direction: rtl;
+}
+.page-photo-owner-avatar {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255,255,255,0.5);
+}
+.page-photo-owner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.page-photo-owner-name {
+  font-size: 0.65rem;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .sidebar { width: 150px; }
@@ -667,8 +742,6 @@ html, body {
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Hidden file input -->
-<input type="file" id="photoInput" accept="image/*"/>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
@@ -706,9 +779,15 @@ const PAGES = [
       <div class="text-block family-note">
         משפחת ויתקון נפגשת כל שישי בפרדס חנה ומתישבת על שלחן אוכל שבנה אבא של סבא לפני כמעט 100 שנים. בשלחן אין מסמר אחד והוא נפתח לגודל שמכיל באופן מיוחד את כל המשפחה שלנו. יין הבית שלנו הוא יין של יקב בנימינה.
       </div>
-      <div class="img-placeholder" id="img-kadesh">
-        <div class="icon">🍷</div>
-        <span>תמונת הכוס הראשונה תופיע כאן</span>
+      <div class="page-image-wrap">
+        <img src="/images/page1.png" alt="הכוס הראשונה" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
+      <div class="page-upload-section" data-pageid="kadesh">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-kadesh"></div>
       </div>
     `
   },
@@ -722,9 +801,15 @@ const PAGES = [
         <span class="emoji-lead">💧</span> רחיצת ידיים:<br/><br/>
         במשפחת ויתקון לא באמת כולם שוטפים ידיים לפני האוכל נכון רועי? לפחות לפני ניתוח רועי שוטף ידיים וזה מספיק לו לכל השבוע.
       </div>
-      <div class="img-placeholder" id="img-urchatz">
-        <div class="icon">🫧</div>
-        <span>תמונה תופיע כאן</span>
+      <div class="page-image-wrap">
+        <img src="/images/page2.png" alt="ורחץ" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
+      <div class="page-upload-section" data-pageid="urchatz">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-urchatz"></div>
       </div>
     `
   },
@@ -739,9 +824,12 @@ const PAGES = [
         וַיּוֹצִיאֵנוּ יְיָ אֱלֹהֵינוּ מִשָּׁם<br/>
         בְּיָד חֲזָקָה וּבִזְרֹעַ נְטוּיָה.</div>
       </div>
-      <div class="img-placeholder" id="img-maggid">
-        <div class="icon">📜</div>
-        <span>תמונה תופיע כאן</span>
+      <div class="page-upload-section" data-pageid="maggid">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-maggid"></div>
       </div>
     `
   },
@@ -755,9 +843,12 @@ const PAGES = [
         <span class="emoji-lead">🎯</span> ברי טומי ניר ומעיין זה בשבילכם:<br/><br/>
         מי שמוצא את האפיקומן דודלי ייתן לו הפתעה!
       </div>
-      <div class="img-placeholder" id="img-afikoman">
-        <div class="icon">🫓</div>
-        <span>תמונה תופיע כאן</span>
+      <div class="page-upload-section" data-pageid="afikoman">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-afikoman"></div>
       </div>
     `
   },
@@ -779,9 +870,12 @@ const PAGES = [
           הַלַּיְלָה הַזֶּה — כֻּלּוֹ מַצָּה.
         </div>
       </div>
-      <div class="img-placeholder" id="img-manishtana">
-        <div class="icon">❓</div>
-        <span>תמונה תופיע כאן</span>
+      <div class="page-upload-section" data-pageid="manishtana">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-manishtana"></div>
       </div>
     `
   },
@@ -810,26 +904,15 @@ const PAGES = [
         דהן &nbsp;•&nbsp;
         ומכת אנפות
       </div>
-      <div class="img-placeholder" id="img-makot">
-        <div class="icon">🐸</div>
-        <span>תמונה תופיע כאן</span>
+      <div class="page-upload-section" data-pageid="makot">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-makot"></div>
       </div>
     `
   },
-  {
-    id: 'photos',
-    number: '📸',
-    title: 'קיר תמונות',
-    subtitle: 'זכרונות מהסדר',
-    content: `
-      <label class="upload-zone" for="photoInput">
-        <span>📷</span>
-        <span>העלאת תמונה מהסדר</span>
-      </label>
-      <div id="photoWallGrid" class="photo-wall-grid"></div>
-      <div id="emptyWall" class="empty-wall">עדיין אין תמונות — היו הראשונים לשתף! 📸</div>
-    `
-  }
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -975,36 +1058,55 @@ function renderOnlineBar() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  RENDER PHOTO WALL
+//  RENDER PER-PAGE PHOTOS
 // ══════════════════════════════════════════════════════════════════════════════
-function renderPhotoWall() {
-  const grid = document.getElementById('photoWallGrid');
-  const empty = document.getElementById('emptyWall');
+function renderAllPagePhotos() {
+  // Find all page photo grids currently in the DOM and re-render each
+  document.querySelectorAll('.page-photo-grid').forEach(grid => {
+    const pageId = grid.id.replace('photos-', '');
+    renderPagePhotos(pageId);
+  });
+}
+
+function renderPagePhotos(pageId) {
+  const grid = document.getElementById('photos-' + pageId);
   if (!grid) return;
-
+  const pagePhotos = state.photos.filter(p => p.pageId === pageId);
   grid.innerHTML = '';
-  if (state.photos.length === 0) {
-    if (empty) empty.style.display = 'block';
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-
-  state.photos.forEach(photo => {
-    const item = document.createElement('div');
-    item.className = 'photo-wall-item';
+  pagePhotos.forEach(photo => {
+    const card = document.createElement('div');
+    card.className = 'page-photo-card';
 
     const img = document.createElement('img');
     img.src = photo.url;
     img.alt = '';
     img.addEventListener('click', () => openLightbox(photo.url));
 
-    const caption = document.createElement('div');
-    caption.className = 'photo-wall-caption';
-    caption.textContent = photo.uploadedBy;
+    // Owner strip with avatar
+    const ownerStrip = document.createElement('div');
+    ownerStrip.className = 'page-photo-owner';
 
-    item.appendChild(img);
-    item.appendChild(caption);
-    grid.appendChild(item);
+    const avWrap = document.createElement('div');
+    avWrap.className = 'page-photo-owner-avatar';
+    const av = AVATARS.find(a => a.id === photo.avatarId) || AVATARS[0];
+    const avImg = document.createElement('img');
+    avImg.src = av.src;
+    avImg.alt = av.emoji;
+    avImg.onerror = function() {
+      this.style.display = 'none';
+      avWrap.textContent = av.emoji;
+    };
+    avWrap.appendChild(avImg);
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'page-photo-owner-name';
+    nameEl.textContent = photo.uploadedBy;
+
+    ownerStrip.appendChild(avWrap);
+    ownerStrip.appendChild(nameEl);
+    card.appendChild(img);
+    card.appendChild(ownerStrip);
+    grid.appendChild(card);
   });
 }
 
@@ -1024,14 +1126,25 @@ document.getElementById('lightbox').addEventListener('click', e => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PHOTO UPLOAD
+//  PER-PAGE PHOTO UPLOAD
 // ══════════════════════════════════════════════════════════════════════════════
-document.getElementById('photoInput').addEventListener('change', async (e) => {
+// Delegate: listen on document for any page-photo-input change
+document.addEventListener('change', async (e) => {
+  if (!e.target.classList.contains('page-photo-input')) return;
   const file = e.target.files[0];
   if (!file || !state.user) return;
+
+  // Find which page this upload belongs to
+  const section = e.target.closest('.page-upload-section');
+  const pageId = section ? section.dataset.pageid : 'general';
+
   const form = new FormData();
   form.append('photo', file);
   form.append('name', state.user.name);
+  form.append('avatarId', state.user.avatar);
+  form.append('pageId', pageId);
+
+  showToast('מעלה תמונה...');
   try {
     const res = await fetch('/upload', { method: 'POST', body: form });
     const data = await res.json();
