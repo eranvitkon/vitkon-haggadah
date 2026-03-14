@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>הגדה משפחת ויתקון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@400;700;900&display=swap" rel="stylesheet"/>
+
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:    #F9F5EE;
+  --warm:     #F2EAD8;
+  --gold:     #B8860B;
+  --gold-lt:  #D4A017;
+  --ink:      #1A1410;
+  --ink-soft: #4A3F35;
+  --ink-mute: #8C7B6E;
+  --red:      #8B1A1A;
+  --border:   #DDD0B8;
+  --shadow:   rgba(26,20,16,0.08);
+  --radius:   12px;
+  --trans:    0.25s ease;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Heebo', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Screens ──────────────────────────────────────────────────────────────── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  LOGIN SCREEN                                                              */
+/* ══════════════════════════════════════════════════════════════════════════ */
+#loginScreen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--cream);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(184,134,11,0.12) 0%, transparent 70%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 540px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 8px 40px var(--shadow);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.login-logo .he-title {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.login-logo .he-sub {
+  font-size: 0.95rem;
+  color: var(--ink-mute);
+  margin-top: 0.4rem;
+  letter-spacing: 0.03em;
+}
+
+.login-logo .divider {
+  width: 48px;
+  height: 2px;
+  background: var(--gold);
+  margin: 1rem auto;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--cream);
+  transition: border-color var(--trans), box-shadow var(--trans);
+  outline: none;
+  direction: rtl;
+}
+.form-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,134,11,0.12);
+}
+
+/* Avatar grid */
+.avatar-section { margin: 1.5rem 0; }
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.avatar-cell {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--trans), transform var(--trans);
+  background: var(--warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+.avatar-cell:hover { transform: scale(1.08); border-color: var(--gold-lt); }
+.avatar-cell.selected { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,134,11,0.2); }
+.avatar-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.avatar-cell img.loaded { display: block; }
+
+.btn-primary {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+  letter-spacing: 0.02em;
+}
+.btn-primary:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(184,134,11,0.3); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  MAIN APP SCREEN                                                           */
+/* ══════════════════════════════════════════════════════════════════════════ */
+#appScreen {
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Top Bar ──────────────────────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 58px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.topbar-title {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.4rem;
+  background: var(--warm);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.user-pill-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.user-pill-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.btn-logout {
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  border-radius: 999px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+/* ── Online Bar ───────────────────────────────────────────────────────────── */
+.online-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--warm);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.online-bar::-webkit-scrollbar { height: 0; }
+.online-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-mute);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.online-dot {
+  width: 7px; height: 7px;
+  background: #22C55E;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.online-avatars { display: flex; gap: 0.3rem; align-items: center; }
+.online-avatar-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.online-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.online-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.online-avatar-name {
+  font-size: 0.6rem;
+  color: var(--ink-mute);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ── Main Layout ──────────────────────────────────────────────────────────── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Sidebar: page nav ────────────────────────────────────────────────────── */
+.sidebar {
+  width: 200px;
+  background: #fff;
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 1rem 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  border-right: 3px solid transparent;
+  transition: all var(--trans);
+  text-align: right;
+}
+.nav-item:hover { background: var(--warm); }
+.nav-item.active {
+  background: var(--warm);
+  border-right-color: var(--gold);
+}
+.nav-item-number {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.15rem;
+}
+.nav-item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  line-height: 1.3;
+}
+.nav-item.active .nav-item-title { color: var(--ink); font-weight: 600; }
+
+/* ── Content area ─────────────────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--cream);
+}
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
+.page { display: none; padding: 2.5rem; max-width: 720px; margin: 0 auto; }
+.page.active { display: block; }
+
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.page-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.page-title {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--ink-mute);
+  margin-top: 0.4rem;
+}
+
+/* Text blocks */
+.text-block {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  direction: rtl;
+  text-align: right;
+}
+.text-block.family-note {
+  background: var(--warm);
+  border-color: rgba(184,134,11,0.25);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.text-block .emoji-lead {
+  font-style: normal;
+  font-size: 1.2em;
+}
+.text-block .bold { font-weight: 700; color: var(--ink); }
+
+/* Hebrew prayer text */
+.prayer-text {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.15rem;
+  line-height: 2;
+  color: var(--ink);
+  text-align: center;
+  margin: 1.5rem 0;
+  direction: rtl;
+}
+
+/* Section divider */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.75rem 0;
+  color: var(--ink-mute);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Image placeholder */
+.img-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--warm);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  font-size: 0.85rem;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.img-placeholder .icon { font-size: 2rem; }
+.img-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--radius) - 2px);
+  display: none;
+}
+.img-placeholder img.loaded {
+  display: block;
+}
+.img-placeholder.has-image { padding: 0; border-style: solid; }
+
+/* ── Photo Wall ───────────────────────────────────────────────────────────── */
+.photo-wall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.photo-wall-item {
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: zoom-in;
+}
+.photo-wall-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--trans);
+}
+.photo-wall-item:hover img { transform: scale(1.04); }
+.photo-wall-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0.5rem 0.5rem 0.4rem;
+  text-align: center;
+  direction: rtl;
+}
+
+/* Upload button */
+.upload-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--ink-mute);
+  transition: all var(--trans);
+  margin-bottom: 1rem;
+  background: #fff;
+}
+.upload-zone:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--warm);
+}
+#photoInput { display: none; }
+
+.empty-wall {
+  text-align: center;
+  color: var(--ink-mute);
+  font-size: 0.85rem;
+  padding: 2rem;
+}
+
+/* ── Lightbox ─────────────────────────────────────────────────────────────── */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 90vw; max-height: 90vh; border-radius: var(--radius); }
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ── Toast ────────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: var(--ink);
+  color: #fff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 2000;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Connection status ────────────────────────────────────────────────────── */
+.conn-badge {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  flex-shrink: 0;
+  transition: background var(--trans);
+}
+.conn-badge.connected { background: #22C55E; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .sidebar { width: 150px; }
+  .page { padding: 1.25rem; }
+  .page-title { font-size: 1.6rem; }
+  .avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 0.4rem; }
+  .login-card { padding: 2rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="he-title">הגדה של פסח</div>
+      <div class="he-sub">משפחת ויתקון • תשפ״ה</div>
+      <div class="divider"></div>
+    </div>
+
+    <label class="form-label" for="nameInput">השם שלך</label>
+    <input class="form-input" id="nameInput" type="text" placeholder="הקלד את שמך..." maxlength="20" autocomplete="off"/>
+
+    <div class="avatar-section">
+      <div class="form-label">בחר תמונה</div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <button class="btn-primary" id="loginBtn">כניסה לסדר פסח ✡</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     APP SCREEN
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div id="appScreen" class="screen">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:0.6rem;">
+      <div class="conn-badge" id="connBadge"></div>
+      <span class="topbar-title">הגדה ויתקון</span>
+    </div>
+    <div class="topbar-right">
+      <div class="user-pill" id="userPill">
+        <div class="user-pill-avatar" id="topbarAvatar"></div>
+        <span id="topbarName"></span>
+      </div>
+      <button class="btn-logout" id="logoutBtn">יציאה</button>
+    </div>
+  </div>
+
+  <!-- Online presence bar -->
+  <div class="online-bar">
+    <div class="online-dot"></div>
+    <span class="online-label">מחוברים עכשיו</span>
+    <div class="online-avatars" id="onlineAvatars">
+      <span style="font-size:0.78rem;color:var(--ink-mute);">טוען...</span>
+    </div>
+  </div>
+
+  <!-- Body: sidebar + content -->
+  <div class="app-body">
+
+    <!-- Sidebar navigation -->
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <!-- Page content -->
+    <main class="content" id="contentArea"></main>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt=""/>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file input -->
+<input type="file" id="photoInput" accept="image/*"/>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════════════════════
+const AVATARS = [
+  { id: 1,  src: '/images/avatar-01.jpg', emoji: '👑' },
+  { id: 2,  src: '/images/avatar-02.jpg', emoji: '🕶️' },
+  { id: 3,  src: '/images/avatar-03.jpg', emoji: '🐝' },
+  { id: 4,  src: '/images/avatar-04.jpg', emoji: '🐈' },
+  { id: 5,  src: '/images/avatar-05.jpg', emoji: '🎾' },
+  { id: 6,  src: '/images/avatar-06.jpg', emoji: '👦' },
+  { id: 7,  src: '/images/avatar-07.jpg', emoji: '👧' },
+  { id: 8,  src: '/images/avatar-08.jpg', emoji: '🧑' },
+  { id: 9,  src: '/images/avatar-09.jpg', emoji: '🐒' },
+  { id: 10, src: '/images/avatar-10.jpg', emoji: '🐿️' },
+  { id: 11, src: '/images/avatar-11.jpg', emoji: '👩‍🦱' },
+  { id: 12, src: '/images/avatar-12.jpg', emoji: '🧓' },
+  { id: 13, src: '/images/avatar-13.jpg', emoji: '👨‍🦳' },
+  { id: 14, src: '/images/avatar-14.jpg', emoji: '👩‍🦳' },
+  { id: 15, src: '/images/avatar-15.jpg', emoji: '🧕' },
+];
+
+const PAGES = [
+  {
+    id: 'kadesh',
+    number: '01',
+    title: 'קדש',
+    subtitle: 'הכוס הראשונה',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם,<br/>
+        בּוֹרֵא פְּרִי הַגָּפֶן.</div>
+      </div>
+      <div class="text-block family-note">
+        משפחת ויתקון נפגשת כל שישי בפרדס חנה ומתישבת על שלחן אוכל שבנה אבא של סבא לפני כמעט 100 שנים. בשלחן אין מסמר אחד והוא נפתח לגודל שמכיל באופן מיוחד את כל המשפחה שלנו. יין הבית שלנו הוא יין של יקב בנימינה.
+      </div>
+      <div class="img-placeholder" id="img-kadesh">
+        <div class="icon">🍷</div>
+        <span>תמונת הכוס הראשונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'urchatz',
+    number: '02',
+    title: 'ורחץ',
+    subtitle: 'רחיצת הידיים',
+    content: `
+      <div class="text-block family-note">
+        <span class="emoji-lead">💧</span> רחיצת ידיים:<br/><br/>
+        במשפחת ויתקון לא באמת כולם שוטפים ידיים לפני האוכל נכון רועי? לפחות לפני ניתוח רועי שוטף ידיים וזה מספיק לו לכל השבוע.
+      </div>
+      <div class="img-placeholder" id="img-urchatz">
+        <div class="icon">🫧</div>
+        <span>תמונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'maggid',
+    number: '03',
+    title: 'מגיד',
+    subtitle: 'סיפור יציאת מצרים',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">עֲבָדִים הָיִינוּ לְפַרְעֹה בְּמִצְרַיִם,<br/>
+        וַיּוֹצִיאֵנוּ יְיָ אֱלֹהֵינוּ מִשָּׁם<br/>
+        בְּיָד חֲזָקָה וּבִזְרֹעַ נְטוּיָה.</div>
+      </div>
+      <div class="img-placeholder" id="img-maggid">
+        <div class="icon">📜</div>
+        <span>תמונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'afikoman',
+    number: '04',
+    title: 'אפיקומן',
+    subtitle: 'מציאת האפיקומן',
+    content: `
+      <div class="text-block family-note">
+        <span class="emoji-lead">🎯</span> ברי טומי ניר ומעיין זה בשבילכם:<br/><br/>
+        מי שמוצא את האפיקומן דודלי ייתן לו הפתעה!
+      </div>
+      <div class="img-placeholder" id="img-afikoman">
+        <div class="icon">🫓</div>
+        <span>תמונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'manishtana',
+    number: '05',
+    title: 'מה נשתנה',
+    subtitle: 'הילדים שואלים',
+    content: `
+      <div class="text-block family-note">
+        <span class="emoji-lead">👶</span> הילדים שואלים:<br/><br/>
+        מי שמתבייש זה לא נורא. ניר עד היום לא מוכן לשיר בקול רם.<br/><br/>
+        כאן נוכל לשתף זכרונות מהילדים כשהם שאלו את המה נשתנה לראשונה...
+      </div>
+      <div class="text-block">
+        <div class="prayer-text">
+          מַה נִּשְׁתַּנָּה הַלַּיְלָה הַזֶּה מִכָּל הַלֵּילוֹת?<br/>
+          שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין חָמֵץ וּמַצָּה,<br/>
+          הַלַּיְלָה הַזֶּה — כֻּלּוֹ מַצָּה.
+        </div>
+      </div>
+      <div class="img-placeholder" id="img-manishtana">
+        <div class="icon">❓</div>
+        <span>תמונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'makot',
+    number: '08',
+    title: 'עשר המכות',
+    subtitle: 'המכות של משפחת ויתקון',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">דָּם, צְפַרְדֵּעַ, כִּנִּים, עָרוֹב,<br/>
+        דֶּבֶר, שְׁחִין, בָּרָד, אַרְבֶּה,<br/>
+        חֹשֶׁךְ, מַכַּת בְּכוֹרוֹת.</div>
+      </div>
+      <div class="text-block family-note">
+        <span class="emoji-lead">💧</span> המכות שלנו:<br/><br/>
+        עשר המכות של משפחת ויתקון:<br/><br/>
+        מתקשרים בשנ״צ &nbsp;•&nbsp;
+        דפוס שלום &nbsp;•&nbsp;
+        דירה אבודה בבן יהודה &nbsp;•&nbsp;
+        נולי &nbsp;•&nbsp;
+        מקס לא מקשיב &nbsp;•&nbsp;
+        דוד פרי מרמה בטניס &nbsp;•&nbsp;
+        דורופל לא במידה &nbsp;•&nbsp;
+        השיק של מוטי &nbsp;•&nbsp;
+        דהן &nbsp;•&nbsp;
+        ומכת אנפות
+      </div>
+      <div class="img-placeholder" id="img-makot">
+        <div class="icon">🐸</div>
+        <span>תמונה תופיע כאן</span>
+      </div>
+    `
+  },
+  {
+    id: 'photos',
+    number: '📸',
+    title: 'קיר תמונות',
+    subtitle: 'זכרונות מהסדר',
+    content: `
+      <label class="upload-zone" for="photoInput">
+        <span>📷</span>
+        <span>העלאת תמונה מהסדר</span>
+      </label>
+      <div id="photoWallGrid" class="photo-wall-grid"></div>
+      <div id="emptyWall" class="empty-wall">עדיין אין תמונות — היו הראשונים לשתף! 📸</div>
+    `
+  }
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════════════════════
+let state = {
+  user: null,       // { name, avatar }
+  ws: null,
+  users: [],
+  photos: [],
+  currentPage: 'kadesh'
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function avatarEl(avatarId, size = 32) {
+  const av = AVATARS.find(a => a.id === avatarId) || AVATARS[0];
+  const div = document.createElement('div');
+  div.style.cssText = `width:${size}px;height:${size}px;border-radius:50%;background:var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:${size * 0.5}px;flex-shrink:0;`;
+  const img = document.createElement('img');
+  img.src = av.src;
+  img.alt = '';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:none;';
+  img.onload = () => { img.style.display = 'block'; div.querySelector('.fallback').style.display = 'none'; };
+  const fallback = document.createElement('span');
+  fallback.className = 'fallback';
+  fallback.textContent = av.emoji;
+  div.appendChild(img);
+  div.appendChild(fallback);
+  return div;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  BUILD LOGIN AVATAR GRID
+// ══════════════════════════════════════════════════════════════════════════════
+let selectedAvatar = 1;
+
+function buildAvatarGrid() {
+  const grid = document.getElementById('avatarGrid');
+  AVATARS.forEach(av => {
+    const cell = document.createElement('div');
+    cell.className = 'avatar-cell' + (av.id === 1 ? ' selected' : '');
+    cell.title = av.emoji;
+
+    const img = document.createElement('img');
+    img.src = av.src;
+    img.alt = av.emoji;
+    img.onload = () => img.classList.add('loaded');
+
+    const emoji = document.createElement('span');
+    emoji.textContent = av.emoji;
+
+    cell.appendChild(img);
+    cell.appendChild(emoji);
+
+    cell.addEventListener('click', () => {
+      document.querySelectorAll('.avatar-cell').forEach(c => c.classList.remove('selected'));
+      cell.classList.add('selected');
+      selectedAvatar = av.id;
+    });
+
+    grid.appendChild(cell);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  BUILD HAGGADAH PAGES
+// ══════════════════════════════════════════════════════════════════════════════
+function buildPages() {
+  const sidebar = document.getElementById('sidebar');
+  const content = document.getElementById('contentArea');
+  sidebar.innerHTML = '';
+  content.innerHTML = '';
+
+  PAGES.forEach((page, idx) => {
+    // Nav item
+    const navItem = document.createElement('div');
+    navItem.className = 'nav-item' + (idx === 0 ? ' active' : '');
+    navItem.dataset.page = page.id;
+    navItem.innerHTML = `
+      <span class="nav-item-number">${page.number}</span>
+      <span class="nav-item-title">${page.title}</span>
+    `;
+    navItem.addEventListener('click', () => navigateTo(page.id));
+    sidebar.appendChild(navItem);
+
+    // Page content
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'page' + (idx === 0 ? ' active' : '');
+    pageDiv.id = 'page-' + page.id;
+    pageDiv.innerHTML = `
+      <div class="page-header">
+        <div class="page-badge">${page.number}</div>
+        <div class="page-title">${page.title}</div>
+        <div class="page-subtitle">${page.subtitle}</div>
+      </div>
+      ${page.content}
+    `;
+    content.appendChild(pageDiv);
+  });
+}
+
+function navigateTo(pageId) {
+  state.currentPage = pageId;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  RENDER ONLINE BAR
+// ══════════════════════════════════════════════════════════════════════════════
+function renderOnlineBar() {
+  const container = document.getElementById('onlineAvatars');
+  container.innerHTML = '';
+  if (state.users.length === 0) {
+    container.innerHTML = '<span style="font-size:0.78rem;color:var(--ink-mute);">אין מחוברים</span>';
+    return;
+  }
+  state.users.forEach(user => {
+    const wrap = document.createElement('div');
+    wrap.className = 'online-avatar-wrap';
+
+    const av = document.createElement('div');
+    av.className = 'online-avatar';
+    av.appendChild(avatarEl(user.avatar, 28));
+
+    const name = document.createElement('div');
+    name.className = 'online-avatar-name';
+    name.textContent = user.name;
+
+    wrap.appendChild(av);
+    wrap.appendChild(name);
+    container.appendChild(wrap);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  RENDER PHOTO WALL
+// ══════════════════════════════════════════════════════════════════════════════
+function renderPhotoWall() {
+  const grid = document.getElementById('photoWallGrid');
+  const empty = document.getElementById('emptyWall');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  if (state.photos.length === 0) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  state.photos.forEach(photo => {
+    const item = document.createElement('div');
+    item.className = 'photo-wall-item';
+
+    const img = document.createElement('img');
+    img.src = photo.url;
+    img.alt = '';
+    img.addEventListener('click', () => openLightbox(photo.url));
+
+    const caption = document.createElement('div');
+    caption.className = 'photo-wall-caption';
+    caption.textContent = photo.uploadedBy;
+
+    item.appendChild(img);
+    item.appendChild(caption);
+    grid.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  LIGHTBOX
+// ══════════════════════════════════════════════════════════════════════════════
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightboxClose').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox'))
+    document.getElementById('lightbox').classList.remove('open');
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PHOTO UPLOAD
+// ══════════════════════════════════════════════════════════════════════════════
+document.getElementById('photoInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file || !state.user) return;
+  const form = new FormData();
+  form.append('photo', file);
+  form.append('name', state.user.name);
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: form });
+    const data = await res.json();
+    if (data.ok) showToast('התמונה הועלתה! 📸');
+    else showToast('שגיאה בהעלאה');
+  } catch {
+    showToast('שגיאה בהעלאה');
+  }
+  e.target.value = '';
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  WEBSOCKET
+// ══════════════════════════════════════════════════════════════════════════════
+function connectWS() {
+  if (!location.host) {
+    console.warn('No server host — WebSocket skipped. Open via your Node server, not as a local file.');
+    showToast('הפעל את השרת לחיבור בזמן אמת');
+    return;
+  }
+  try {
+    const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+    const ws = new WebSocket(`${proto}://${location.host}`);
+    state.ws = ws;
+
+    ws.addEventListener('open', () => {
+      document.getElementById('connBadge').classList.add('connected');
+      if (state.user) {
+        ws.send(JSON.stringify({ type: 'login', name: state.user.name, avatar: state.user.avatar }));
+      }
+    });
+
+    ws.addEventListener('message', (e) => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'state') {
+        state.users = msg.users;
+        state.photos = msg.photos;
+        renderOnlineBar();
+        renderPhotoWall();
+      }
+      if (msg.type === 'force_logout') {
+        doLogout(true);
+        showToast('המנהל איפס את האפליקציה', 4000);
+      }
+    });
+
+    ws.addEventListener('close', () => {
+      document.getElementById('connBadge').classList.remove('connected');
+      if (state.user) setTimeout(connectWS, 3000);
+    });
+
+    ws.addEventListener('error', (err) => {
+      console.warn('WebSocket error:', err);
+    });
+  } catch (err) {
+    console.warn('WebSocket failed:', err);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  LOGIN / LOGOUT
+// ══════════════════════════════════════════════════════════════════════════════
+function doLogin(name, avatarId) {
+  state.user = { name, avatar: avatarId };
+
+  // Update topbar
+  document.getElementById('topbarName').textContent = name;
+  const avatarContainer = document.getElementById('topbarAvatar');
+  avatarContainer.innerHTML = '';
+  avatarContainer.appendChild(avatarEl(avatarId, 26));
+
+  // Switch screens
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+
+  // Build pages
+  buildPages();
+
+  // Connect WS (will send login on open)
+  connectWS();
+}
+
+function doLogout(forced = false) {
+  if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+    if (!forced) state.ws.send(JSON.stringify({ type: 'logout' }));
+    state.ws.close();
+  }
+  state.user = null;
+  state.ws = null;
+  state.users = [];
+  state.photos = [];
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+}
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { showToast('נא להזין שם'); return; }
+  doLogin(name, selectedAvatar);
+});
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => doLogout(false));
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════════════════
+buildAvatarGrid();
+</script>
+</body>
+</html>
