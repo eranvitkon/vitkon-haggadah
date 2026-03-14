@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 3000;
 const ADMIN_KEY = process.env.ADMIN_KEY || 'vitkon2025';
 
 // ── Storage ──────────────────────────────────────────────────────────────────
-const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
+// uploads/ sits at the repo root — no conflict with any existing files/folders
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -26,8 +27,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 // ── In-memory state ───────────────────────────────────────────────────────────
-let connectedUsers = {};   // socketId → { name, avatar, joinedAt }
-let photoWall = [];        // [{ url, uploadedBy, timestamp }]
+let connectedUsers = {};
+let photoWall = [];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function broadcast(data) {
@@ -46,10 +47,17 @@ function broadcastState() {
 }
 
 // ── Static files ──────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve repo root directly: index.html and images/ are both at root level
+app.use(express.static(__dirname));
+app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.json());
 
-// ── REST: upload photo ────────────────────────────────────────────────────────
+// ── Root route ────────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ── Upload photo ──────────────────────────────────────────────────────────────
 app.post('/upload', upload.single('photo'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file' });
   const uploader = req.body.name || 'אורח';
@@ -63,31 +71,23 @@ app.post('/upload', upload.single('photo'), (req, res) => {
   res.json({ ok: true, photo: photoEntry });
 });
 
-// ── REST: admin reset ─────────────────────────────────────────────────────────
+// ── Admin reset ───────────────────────────────────────────────────────────────
 app.get('/reset', (req, res) => {
   if (req.query.key !== ADMIN_KEY) {
     return res.status(403).json({ error: 'Unauthorized' });
   }
-
-  // Delete uploaded photos
   fs.readdirSync(UPLOADS_DIR).forEach(file => {
     fs.unlinkSync(path.join(UPLOADS_DIR, file));
   });
   photoWall = [];
-
-  // Force all clients to log out
   broadcast({ type: 'force_logout' });
   connectedUsers = {};
-
   res.json({ ok: true, message: 'Reset complete — all users logged out, photos deleted' });
 });
 
-// ── REST: current state (for reconnect) ───────────────────────────────────────
+// ── State endpoint ────────────────────────────────────────────────────────────
 app.get('/state', (req, res) => {
-  res.json({
-    users: Object.values(connectedUsers),
-    photos: photoWall
-  });
+  res.json({ users: Object.values(connectedUsers), photos: photoWall });
 });
 
 // ── WebSocket ─────────────────────────────────────────────────────────────────
@@ -120,7 +120,6 @@ wss.on('connection', (ws) => {
     broadcastState();
   });
 
-  // Send current state on connect
   ws.send(JSON.stringify({
     type: 'state',
     users: Object.values(connectedUsers),
