@@ -783,6 +783,12 @@ const PAGES = [
       <div class="page-image-wrap">
         <img src="/images/Lior-magic-page4.png" alt="יחץ" class="page-img" onerror="this.parentElement.style.display='none'"/>
       </div>
+      <div class="text-block family-note">
+        לא כולם עושים תמיד מה שהם רוצים בחיים. לפעמים אנשים עושים דברים שאחרים מצפים מהם לעשות וזה בסדר גמור כי אנחנו בגלגל ענק והכל מסתובב. האיש שבתמונה ייקח כל אחד ואחת מכם מאילת ברגע זה אם רק תבקשו.
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/Ambit-colored.jpg" alt="אמביט" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
       <div class="page-upload-section" data-pageid="yachatz">
         <label class="upload-zone page-upload-trigger">
           <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
@@ -828,6 +834,9 @@ const PAGES = [
     content: `
       <div class="text-block">
         <div class="prayer-text">עֲבָדִים הָיִינוּ לְפַרְעֹה בְּמִצְרָיִם, וַיּוֹצִיאֵנוּ יְיָ אֱלֹהֵינוּ מִשָּׁם בְּיָד חֲזָקָה וּבִזְרוֹעַ נְטוּיָה. וְאִלּוּ לֹא הוֹצִיא הַקָּדוֹשׁ בָּרוּךְ הוּא אֶת אֲבוֹתֵינוּ מִמִּצְרָיִם, הֲרֵי אָנוּ וּבָנֵינוּ וּבְנֵי בָנֵינוּ מְשֻׁעְבָּדִים הָיִינוּ לְפַרְעֹה בְּמִצְרָיִם. וַאֲפִילוּ כֻּלָּנוּ חֲכָמִים, כֻּלָּנוּ נְבוֹנִים, כֻּלָנוּ זְקֵנִים, כֻּלָנוּ יוֹדְעִים אֶת הַתּוֹרָה, מִצְוָה עָלֵינוּ לְסַפֵּר בִּיצִיאַת מִצְרַיִם. וְכָל הַמַּרְבֶּה לְסַפֵּר בִּיצִיאַת מִצְרַיִם הֲרֵי זֶה מְשֻׁבָּח.</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/3slaves.jpg" alt="עבדים" class="page-img" onerror="this.parentElement.style.display='none'"/>
       </div>
       <div class="page-upload-section" data-pageid="avadim">
         <label class="upload-zone page-upload-trigger">
@@ -886,6 +895,9 @@ const PAGES = [
 שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין שְׁאָר יְרָקוֹת, - הַלַּיְלָה הַזֶּה מָרוֹר!<br/>
 שֶׁבְּכָל הַלֵּילוֹת אֵין אָנוּ מַטְבִּילִין אֲפִילוּ פַּעַם אֶחָת, - הַלַּיְלָה הַזֶּה שְׁתֵּי פְעָמִים!<br/>
 שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין בֵּין יוֹשְׁבִין וּבֵין מְסֻבִּין, - הַלַּיְלָה הַזֶּה כֻּלָּנוּ מְסֻבִּין!</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/BerryTommy" alt="ברי וטומי" class="page-img" onerror="this.parentElement.style.display='none'"/>
       </div>
       <div class="page-upload-section" data-pageid="manishtana">
         <label class="upload-zone page-upload-trigger">
@@ -1201,7 +1213,7 @@ function connectWS() {
         state.users = msg.users;
         state.photos = msg.photos;
         renderOnlineBar();
-        renderPhotoWall();
+        renderAllPagePhotos();
       }
       if (msg.type === 'force_logout') {
         doLogout(true);
