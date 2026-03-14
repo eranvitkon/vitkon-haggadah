@@ -440,8 +440,9 @@ body {
 .page-img {
   width: 100%;
   display: block;
-  object-fit: cover;
-  max-height: 300px;
+  object-fit: contain;
+  background: var(--warm);
+  max-height: 480px;
 }
 
 /* ── Per-page upload section ─────────────────────────────────────────────────── */
@@ -598,7 +599,7 @@ body {
   }
   .nav-item.active { border-top-color: transparent; border-right-color: var(--gold); }
   .page { padding: 2rem 1.5rem 3rem; }
-  .page-img { max-height: 420px; }
+  .page-img { max-height: 560px; }
   .toast { bottom: 1.5rem; }
 }
 </style>
@@ -934,7 +935,7 @@ const PAGES = [
         ומכת אנפות
       </div>
       <div class="page-image-wrap">
-        <img src="/images/space.png" alt="חלל" class="page-img" onerror="this.parentElement.style.display='none'"/>
+        <img src="/images/space.png" alt="חלל" class="page-img" onerror="this.src='/images/Space.png'" />
       </div>
       <div class="page-upload-section" data-pageid="makot">
         <label class="upload-zone page-upload-trigger">
