@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@400;700;900&display=swap" rel="stylesheet"/>
 
 <style>
-/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -25,80 +25,79 @@
   --shadow:   rgba(26,20,16,0.08);
   --radius:   12px;
   --trans:    0.25s ease;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
 }
 
-html, body {
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
   height: 100%;
   font-family: 'Heebo', sans-serif;
   background: var(--cream);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
-/* ── Screens ──────────────────────────────────────────────────────────────── */
-.screen { display: none; min-height: 100vh; }
+/* ── Screens ────────────────────────────────────────────────────────────────── */
+.screen { display: none; }
 .screen.active { display: flex; }
 
-/* ══════════════════════════════════════════════════════════════════════════ */
-/*  LOGIN SCREEN                                                              */
-/* ══════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════════════════════════════════════════ */
 #loginScreen {
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  justify-content: flex-start;
+  min-height: 100dvh;
+  padding: calc(1.5rem + var(--safe-top)) 1rem calc(1.5rem + var(--safe-bot));
+  overflow-y: auto;
   background: var(--cream);
-  background-image:
-    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(184,134,11,0.12) 0%, transparent 70%);
+  background-image: radial-gradient(ellipse 70% 35% at 50% 0%, rgba(184,134,11,0.13) 0%, transparent 70%);
 }
 
 .login-card {
   width: 100%;
-  max-width: 540px;
+  max-width: 480px;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 3rem 2.5rem;
+  padding: 2rem 1.5rem;
   box-shadow: 0 8px 40px var(--shadow);
+  margin: auto 0;
 }
 
-.login-logo {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
+.login-logo { text-align: center; margin-bottom: 2rem; }
 .login-logo .he-title {
   font-family: 'Frank Ruhl Libre', serif;
-  font-size: 2.6rem;
+  font-size: clamp(1.9rem, 7vw, 2.6rem);
   font-weight: 900;
   color: var(--ink);
   line-height: 1.1;
 }
 .login-logo .he-sub {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--ink-mute);
   margin-top: 0.4rem;
-  letter-spacing: 0.03em;
 }
-
 .login-logo .divider {
-  width: 48px;
-  height: 2px;
+  width: 48px; height: 2px;
   background: var(--gold);
-  margin: 1rem auto;
+  margin: 0.9rem auto;
 }
 
 .form-label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 600;
   color: var(--ink-soft);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
   letter-spacing: 0.04em;
 }
-
 .form-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   font-family: 'Heebo', sans-serif;
@@ -108,19 +107,20 @@ html, body {
   transition: border-color var(--trans), box-shadow var(--trans);
   outline: none;
   direction: rtl;
+  -webkit-appearance: none;
 }
 .form-input:focus {
   border-color: var(--gold);
   box-shadow: 0 0 0 3px rgba(184,134,11,0.12);
 }
 
-/* Avatar grid */
-.avatar-section { margin: 1.5rem 0; }
+/* Avatar grid — 5 cols on all sizes */
+.avatar-section { margin: 1.25rem 0; }
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.6rem;
-  margin-top: 0.75rem;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
 }
 .avatar-cell {
   aspect-ratio: 1;
@@ -133,151 +133,155 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.avatar-cell:hover { transform: scale(1.08); border-color: var(--gold-lt); }
-.avatar-cell.selected { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,134,11,0.2); }
-.avatar-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: none;
+.avatar-cell:active { transform: scale(0.93); }
+.avatar-cell.selected {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,134,11,0.2);
 }
+.avatar-cell img { width: 100%; height: 100%; object-fit: cover; display: none; }
 .avatar-cell img.loaded { display: block; }
 
 .btn-primary {
   width: 100%;
-  padding: 0.9rem;
+  padding: 1rem;
   background: var(--gold);
   color: #fff;
   border: none;
   border-radius: var(--radius);
   font-family: 'Heebo', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 1.5rem;
-  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+  margin-top: 1.25rem;
+  transition: background var(--trans);
   letter-spacing: 0.02em;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.btn-primary:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(184,134,11,0.3); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:active { background: var(--gold-lt); }
 
-/* ══════════════════════════════════════════════════════════════════════════ */
-/*  MAIN APP SCREEN                                                           */
-/* ══════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════════
+   APP SCREEN — mobile-first full-height layout
+══════════════════════════════════════════════════════════════════════════════ */
 #appScreen {
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
-/* ── Top Bar ──────────────────────────────────────────────────────────────── */
+/* ── Top bar ─────────────────────────────────────────────────────────────────── */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
-  height: 58px;
+  padding: calc(0.55rem + var(--safe-top)) 0.9rem 0.55rem;
   background: #fff;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 100;
+  gap: 0.5rem;
 }
-
 .topbar-title {
   font-family: 'Frank Ruhl Libre', serif;
-  font-size: 1.3rem;
+  font-size: clamp(0.85rem, 3.5vw, 1.1rem);
   font-weight: 700;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
+  flex-shrink: 0;
 }
-
 .user-pill {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.7rem 0.3rem 0.4rem;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem 0.25rem 0.3rem;
   background: var(--warm);
   border-radius: 999px;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--ink-soft);
+  max-width: 110px;
+  overflow: hidden;
 }
+.user-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .user-pill-avatar {
-  width: 26px;
-  height: 26px;
+  width: 24px; height: 24px;
   border-radius: 50%;
   background: var(--border);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 .user-pill-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .btn-logout {
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 0.65rem;
   border: 1.5px solid var(--border);
   background: transparent;
   border-radius: 999px;
   font-family: 'Heebo', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--ink-soft);
   cursor: pointer;
-  transition: all var(--trans);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.btn-logout:hover { border-color: var(--red); color: var(--red); }
+.btn-logout:active { border-color: var(--red); color: var(--red); }
 
-/* ── Online Bar ───────────────────────────────────────────────────────────── */
+/* ── Online presence bar ─────────────────────────────────────────────────────── */
 .online-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.5rem;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
   background: var(--warm);
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
   flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
 }
-.online-bar::-webkit-scrollbar { height: 0; }
+.online-bar::-webkit-scrollbar { display: none; }
 .online-label {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 700;
   color: var(--ink-mute);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   white-space: nowrap;
   flex-shrink: 0;
 }
 .online-dot {
-  width: 7px; height: 7px;
+  width: 6px; height: 6px;
   background: #22C55E;
   border-radius: 50%;
   flex-shrink: 0;
   animation: pulse 2s infinite;
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-.online-avatars { display: flex; gap: 0.3rem; align-items: center; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+.online-avatars { display: flex; gap: 0.25rem; align-items: center; }
 .online-avatar-wrap {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
+  flex-shrink: 0;
 }
 .online-avatar {
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   border: 2px solid #fff;
   background: var(--border);
@@ -285,103 +289,113 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
-  box-shadow: 0 1px 4px var(--shadow);
+  font-size: 0.85rem;
+  box-shadow: 0 1px 3px var(--shadow);
 }
 .online-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .online-avatar-name {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: var(--ink-mute);
   white-space: nowrap;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* ── Main Layout ──────────────────────────────────────────────────────────── */
+/* ── Main layout: sidebar bottom on mobile ──────────────────────────────────── */
 .app-body {
   display: flex;
+  flex-direction: column-reverse;   /* content on top, nav on bottom */
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
-/* ── Sidebar: page nav ────────────────────────────────────────────────────── */
+/* ── Bottom tab nav (mobile) ─────────────────────────────────────────────────── */
 .sidebar {
-  width: 200px;
-  background: #fff;
-  border-left: 1px solid var(--border);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
   flex-shrink: 0;
-  padding: 1rem 0;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bot);
+  -webkit-overflow-scrolling: touch;
 }
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.sidebar::-webkit-scrollbar { display: none; }
 
 .nav-item {
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
-  border-right: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid transparent;
   transition: all var(--trans);
-  text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-width: 60px;
 }
-.nav-item:hover { background: var(--warm); }
+.nav-item:active { background: var(--warm); }
 .nav-item.active {
   background: var(--warm);
-  border-right-color: var(--gold);
+  border-top-color: var(--gold);
 }
 .nav-item-number {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: var(--gold);
-  letter-spacing: 0.06em;
-  margin-bottom: 0.15rem;
+  letter-spacing: 0.04em;
 }
 .nav-item-title {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--ink-soft);
-  line-height: 1.3;
+  margin-top: 1px;
+  text-align: center;
 }
-.nav-item.active .nav-item-title { color: var(--ink); font-weight: 600; }
+.nav-item.active .nav-item-title { color: var(--ink); font-weight: 700; }
 
-/* ── Content area ─────────────────────────────────────────────────────────── */
+/* ── Content scroll area ─────────────────────────────────────────────────────── */
 .content {
   flex: 1;
   overflow-y: auto;
   background: var(--cream);
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
-.content::-webkit-scrollbar { width: 6px; }
-.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.content::-webkit-scrollbar { display: none; }
 
-/* ── Page ─────────────────────────────────────────────────────────────────── */
-.page { display: none; padding: 2.5rem; max-width: 720px; margin: 0 auto; }
+/* ── Page ────────────────────────────────────────────────────────────────────── */
+.page { display: none; padding: 1.25rem 1rem 2rem; max-width: 680px; margin: 0 auto; }
 .page.active { display: block; }
 
 .page-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--border);
 }
 .page-badge {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 .page-title {
   font-family: 'Frank Ruhl Libre', serif;
-  font-size: 2.2rem;
+  font-size: clamp(1.5rem, 6vw, 2rem);
   font-weight: 900;
   color: var(--ink);
   line-height: 1.15;
 }
 .page-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--ink-mute);
-  margin-top: 0.4rem;
+  margin-top: 0.25rem;
 }
 
 /* Text blocks */
@@ -389,10 +403,10 @@ html, body {
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 1.25rem;
-  font-size: 1rem;
-  line-height: 1.85;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.9;
   color: var(--ink-soft);
   direction: rtl;
   text-align: right;
@@ -401,195 +415,25 @@ html, body {
   background: var(--warm);
   border-color: rgba(184,134,11,0.25);
   font-style: italic;
-  color: var(--ink-soft);
 }
-.text-block .emoji-lead {
-  font-style: normal;
-  font-size: 1.2em;
-}
-.text-block .bold { font-weight: 700; color: var(--ink); }
+.text-block .emoji-lead { font-style: normal; font-size: 1.1em; }
 
-/* Hebrew prayer text */
+/* Prayer text */
 .prayer-text {
   font-family: 'Frank Ruhl Libre', serif;
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 3.5vw, 1.1rem);
   line-height: 2;
   color: var(--ink);
   text-align: center;
-  margin: 1.5rem 0;
   direction: rtl;
 }
 
-/* Section divider */
-.section-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1.75rem 0;
-  color: var(--ink-mute);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-.section-divider::before,
-.section-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Image placeholder */
-.img-placeholder {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: var(--warm);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-mute);
-  font-size: 0.85rem;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-.img-placeholder .icon { font-size: 2rem; }
-.img-placeholder img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: calc(var(--radius) - 2px);
-  display: none;
-}
-.img-placeholder img.loaded {
-  display: block;
-}
-.img-placeholder.has-image { padding: 0; border-style: solid; }
-
-/* ── Photo Wall ───────────────────────────────────────────────────────────── */
-.photo-wall-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-.photo-wall-item {
-  aspect-ratio: 1;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--warm);
-  border: 1px solid var(--border);
-  position: relative;
-  cursor: zoom-in;
-}
-.photo-wall-item img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform var(--trans);
-}
-.photo-wall-item:hover img { transform: scale(1.04); }
-.photo-wall-caption {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: linear-gradient(transparent, rgba(0,0,0,0.6));
-  color: #fff;
-  font-size: 0.7rem;
-  padding: 0.5rem 0.5rem 0.4rem;
-  text-align: center;
-  direction: rtl;
-}
-
-/* Upload button */
-.upload-zone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.8rem;
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: var(--ink-mute);
-  transition: all var(--trans);
-  margin-bottom: 1rem;
-  background: #fff;
-}
-.upload-zone:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-  background: var(--warm);
-}
-#photoInput { display: none; }
-
-.empty-wall {
-  text-align: center;
-  color: var(--ink-mute);
-  font-size: 0.85rem;
-  padding: 2rem;
-}
-
-/* ── Lightbox ─────────────────────────────────────────────────────────────── */
-.lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 90vw; max-height: 90vh; border-radius: var(--radius); }
-.lightbox-close {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-  line-height: 1;
-}
-
-/* ── Toast ────────────────────────────────────────────────────────────────── */
-.toast {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(120%);
-  background: var(--ink);
-  color: #fff;
-  padding: 0.65rem 1.25rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  z-index: 2000;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ── Connection status ────────────────────────────────────────────────────── */
-.conn-badge {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #EF4444;
-  flex-shrink: 0;
-  transition: background var(--trans);
-}
-.conn-badge.connected { background: #22C55E; }
-
-
-/* ── Page image ───────────────────────────────────────────────────────────── */
+/* Page image */
 .page-image-wrap {
   width: 100%;
   border-radius: var(--radius);
   overflow: hidden;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   background: var(--warm);
   border: 1px solid var(--border);
 }
@@ -597,18 +441,35 @@ html, body {
   width: 100%;
   display: block;
   object-fit: cover;
-  max-height: 420px;
+  max-height: 300px;
 }
 
-/* ── Per-page upload section ─────────────────────────────────────────────── */
-.page-upload-section { margin-top: 1.5rem; }
+/* ── Per-page upload section ─────────────────────────────────────────────────── */
+.page-upload-section { margin-top: 1.25rem; }
 .page-upload-trigger { cursor: pointer; }
+
+.upload-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  color: var(--ink-mute);
+  transition: all var(--trans);
+  background: #fff;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.upload-zone:active { border-color: var(--gold); color: var(--gold); background: var(--warm); }
 
 .page-photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.65rem;
-  margin-top: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.65rem;
 }
 .page-photo-card {
   border-radius: var(--radius);
@@ -619,52 +480,126 @@ html, body {
   cursor: zoom-in;
 }
 .page-photo-card img {
-  width: 100%; 
+  width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   display: block;
-  transition: transform var(--trans);
 }
-.page-photo-card:hover img { transform: scale(1.04); }
 .page-photo-owner {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.65));
-  padding: 0.5rem 0.4rem 0.35rem;
+  padding: 0.5rem 0.4rem 0.3rem;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   direction: rtl;
 }
 .page-photo-owner-avatar {
-  width: 20px; height: 20px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   overflow: hidden;
   flex-shrink: 0;
   border: 1.5px solid rgba(255,255,255,0.5);
 }
 .page-photo-owner-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .page-photo-owner-name {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ── Responsive ───────────────────────────────────────────────────────────── */
-@media (max-width: 640px) {
-  .sidebar { width: 150px; }
-  .page { padding: 1.25rem; }
-  .page-title { font-size: 1.6rem; }
-  .avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 0.4rem; }
-  .login-card { padding: 2rem 1.25rem; }
+/* ── Lightbox ────────────────────────────────────────────────────────────────── */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 95vw; max-height: 90dvh; border-radius: var(--radius); }
+.lightbox-close {
+  position: absolute;
+  top: calc(1rem + var(--safe-top));
+  right: 1rem;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: calc(4.5rem + var(--safe-bot));
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: var(--ink);
+  color: #fff;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  z-index: 2000;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Connection badge ────────────────────────────────────────────────────────── */
+.conn-badge {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #EF4444;
+  flex-shrink: 0;
+  transition: background var(--trans);
+}
+.conn-badge.connected { background: #22C55E; }
+
+/* ── Desktop override (wider screens) ───────────────────────────────────────── */
+@media (min-width: 700px) {
+  .app-body { flex-direction: row; }
+  .sidebar {
+    flex-direction: column;
+    width: 180px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-top: none;
+    border-left: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .nav-item {
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 0.65rem 1rem;
+    border-top: none;
+    border-right: 3px solid transparent;
+    min-width: unset;
+  }
+  .nav-item.active { border-top-color: transparent; border-right-color: var(--gold); }
+  .page { padding: 2rem 1.5rem 3rem; }
+  .page-img { max-height: 420px; }
+  .toast { bottom: 1.5rem; }
 }
 </style>
 </head>
@@ -702,7 +637,7 @@ html, body {
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:0.6rem;">
       <div class="conn-badge" id="connBadge"></div>
-      <span class="topbar-title">הגדה ויתקון</span>
+      <span class="topbar-title">הגדה לבית משפחת ויתקון</span>
     </div>
     <div class="topbar-right">
       <div class="user-pill" id="userPill">
@@ -773,8 +708,10 @@ const PAGES = [
     subtitle: 'הכוס הראשונה',
     content: `
       <div class="text-block">
-        <div class="prayer-text">בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם,<br/>
-        בּוֹרֵא פְּרִי הַגָּפֶן.</div>
+        <div class="prayer-text">סַבְרִי מָרָנָן וְרַבָּנָן וְרַבּוֹתַי<br/><br/>
+בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם בּוֹרֵא פְּרִי הַגָפֶן.<br/><br/>
+בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, אֲשֶׁר בָּחַר בָּנוּ מִכָּל עָם וְרוֹמְמָנוּ מִכָּל לָשׁוֹן וְקִדְּשָׁנוּ בְּמִצְוֹתָיו. וַתִּתֶּן לָנוּ יְיָ אֱלֹהֵינוּ בְּאַהֲבָה (בְּשַׁבָּת: שַׁבָּתוֹת לִמְנוּחָה וּ)מוֹעֲדִים לְשִׂמְחָה, חַגִּים וּזְמַנִּים לְשָׂשׂוֹן, אֶת יוֹם (הַשַּׁבָּת הַזֶה וְאֶת יוֹם) חַג הַמַּצּוֹת הַזֶּה, זְמַן חֵרוּתֵנוּ (בְּאַהֲבָה), מִקְרָא קֹדֶשׁ, זֵכֶר לִיצִיאַת מִצְרָיִם. כִּי בָנוּ בָחַרְתָּ וְאוֹתָנוּ קִדַּשְׁתָּ מִכָּל הָעַמִּים, (וְשַׁבָּת) וּמוֹעֲדֵי קָדְשֶךָ (בְּאַהֲבָה וּבְרָצוֹן,) בְּשִׂמְחָה וּבְשָׂשׂוֹן הִנְחַלְתָּנוּ. בָּרוּךְ אַתָּה יְיָ, מְקַדֵּשׁ (הַשַּׁבָּת וְ)יִשְׂרָאֵל וְהַזְּמַנִּים.<br/><br/>
+בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, שֶׁהֶחֱיָנוּ וְקִיְּמָנוּ וְהִגִּיעָנוּ לַזְּמַן הַזֶה.</div>
       </div>
       <div class="text-block family-note">
         משפחת ויתקון נפגשת כל שישי בפרדס חנה ומתישבת על שלחן אוכל שבנה אבא של סבא לפני כמעט 100 שנים. בשלחן אין מסמר אחד והוא נפתח לגודל שמכיל באופן מיוחד את כל המשפחה שלנו. יין הבית שלנו הוא יין של יקב בנימינה.
@@ -814,15 +751,65 @@ const PAGES = [
     `
   },
   {
-    id: 'maggid',
+    id: 'karpas',
     number: '03',
-    title: 'מגיד',
+    title: 'כַּרְפַּס',
+    subtitle: 'ברכת הירקות',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, בּוֹרֵא פְּרִי הָאֲדָמָה.</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/Page3.png" alt="כרפס" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
+      <div class="page-upload-section" data-pageid="karpas">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-karpas"></div>
+      </div>
+    `
+  },
+  {
+    id: 'yachatz',
+    number: '04',
+    title: 'יַחַץ',
+    subtitle: 'שבירת המצה',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">בַּעַל הַבַּיִת (יורם) יִבְצַע אֶת הַמַּצָּה הָאֶמְצָעִית לִשְׁתַּיִם וּמַצְפִּין אֶת הַחֵצִי הַגָדוֹל לַאֲפִיקוֹמָן.</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/Lior-magic-page4.png" alt="יחץ" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
+      <div class="page-upload-section" data-pageid="yachatz">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-yachatz"></div>
+      </div>
+    `
+  },
+  {
+    id: 'maggid',
+    number: '05',
+    title: 'מַגִּיד',
     subtitle: 'סיפור יציאת מצרים',
     content: `
       <div class="text-block">
-        <div class="prayer-text">עֲבָדִים הָיִינוּ לְפַרְעֹה בְּמִצְרַיִם,<br/>
-        וַיּוֹצִיאֵנוּ יְיָ אֱלֹהֵינוּ מִשָּׁם<br/>
-        בְּיָד חֲזָקָה וּבִזְרֹעַ נְטוּיָה.</div>
+        <div class="prayer-text">הָא לַחְמָא עַנְיָא דִי אֲכָלוּ אַבְהָתָנָא בְּאַרְעָא דְמִצְרָיִם. כָּל דִכְפִין יֵיתֵי וְיֵיכֹל, כָּל דִצְרִיךְ יֵיתֵי וְיִפְסַח. הָשַׁתָּא הָכָא, לְשָׁנָה הַבָּאָה בְּאַרְעָא דְיִשְׂרָאֵל. הָשַׁתָּא עַבְדֵי, לְשָׁנָה הַבָּאָה בְּנֵי חוֹרִין.</div>
+      </div>
+      <div class="text-block">
+        <div class="prayer-text">מַה נִּשְׁתַּנָה הַלַּיְלָה הַזֶּה מִכָּל הַלֵּילוֹת?<br/><br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין חָמֵץ וּמַצָּה, הַלַּיְלָה הַזֶּה - כֻּלּוֹ מַצָּה!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין שְׁאָר יְרָקוֹת, - הַלַּיְלָה הַזֶּה מָרוֹר!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אֵין אָנוּ מַטְבִּילִין אֲפִילוּ פַּעַם אֶחָת, - הַלַּיְלָה הַזֶּה שְׁתֵּי פְעָמִים!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין בֵּין יוֹשְׁבִין וּבֵין מְסֻבִּין, - הַלַּיְלָה הַזֶּה כֻּלָּנוּ מְסֻבִּין!</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/Page5.jpeg" alt="מגיד" class="page-img" onerror="this.parentElement.style.display='none'"/>
       </div>
       <div class="page-upload-section" data-pageid="maggid">
         <label class="upload-zone page-upload-trigger">
@@ -834,45 +821,75 @@ const PAGES = [
     `
   },
   {
-    id: 'afikoman',
-    number: '04',
-    title: 'אפיקומן',
-    subtitle: 'מציאת האפיקומן',
+    id: 'avadim',
+    number: '06',
+    title: 'עֲבָדִים הָיִינוּ',
+    subtitle: 'סיפור השעבוד',
+    content: `
+      <div class="text-block">
+        <div class="prayer-text">עֲבָדִים הָיִינוּ לְפַרְעֹה בְּמִצְרָיִם, וַיּוֹצִיאֵנוּ יְיָ אֱלֹהֵינוּ מִשָּׁם בְּיָד חֲזָקָה וּבִזְרוֹעַ נְטוּיָה. וְאִלּוּ לֹא הוֹצִיא הַקָּדוֹשׁ בָּרוּךְ הוּא אֶת אֲבוֹתֵינוּ מִמִּצְרָיִם, הֲרֵי אָנוּ וּבָנֵינוּ וּבְנֵי בָנֵינוּ מְשֻׁעְבָּדִים הָיִינוּ לְפַרְעֹה בְּמִצְרָיִם. וַאֲפִילוּ כֻּלָּנוּ חֲכָמִים, כֻּלָּנוּ נְבוֹנִים, כֻּלָנוּ זְקֵנִים, כֻּלָנוּ יוֹדְעִים אֶת הַתּוֹרָה, מִצְוָה עָלֵינוּ לְסַפֵּר בִּיצִיאַת מִצְרַיִם. וְכָל הַמַּרְבֶּה לְסַפֵּר בִּיצִיאַת מִצְרַיִם הֲרֵי זֶה מְשֻׁבָּח.</div>
+      </div>
+      <div class="page-upload-section" data-pageid="avadim">
+        <label class="upload-zone page-upload-trigger">
+          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
+        </label>
+        <div class="page-photo-grid" id="photos-avadim"></div>
+      </div>
+    `
+  },
+  {
+    id: 'arbaah',
+    number: '07',
+    title: 'אַרְבָּעָה בָנִים',
+    subtitle: 'ארבעת הבנים',
     content: `
       <div class="text-block family-note">
         <span class="emoji-lead">🎯</span> ברי טומי ניר ומעיין זה בשבילכם:<br/><br/>
         מי שמוצא את האפיקומן דודלי ייתן לו הפתעה!
       </div>
-      <div class="page-upload-section" data-pageid="afikoman">
+      <div class="text-block">
+        <div class="prayer-text">מַעֲשֶׂה בְּרַבִּי אֱלִיעֶזֶר וְרַבִּי יְהוֹשֻעַ וְרַבִּי אֶלְעָזָר בֶּן עֲזַרְיָה וְרַבְּי עֲקִיבָא וְרַבִּי טַרְפוֹן שֶהָיוּ מְסֻבִּין בִּבְנֵי בְרַק, וְהָיוּ מְסַפְּרִים בִּיצִיאַת מִצְרַיִם כָּל אוֹתוֹ הַלַּיְלָה עַד שֶׁבָּאוּ תַלְמִידֵיהֶם וְאָמְרוּ לָהֶם: רַבּוֹתֵינוּ, הִגִּיעַ זְמַן קְרִיאַת שְׁמַע שֶׁל שַׁחֲרִית.<br/><br/>
+אָמַר רַבִּי אֶלְעָזָר בֶּן עֲזַרְיָה: הֲרֵי אֲנִי כְבֶן שִׁבְעִים שָׁנָה, וְלֹא זָכִיתִי שֶׁתֵּאָמֵר יְצִיאַת מִצְרַיִם בַּלֵּילוֹת עַד שֶׁדְּרָשָׁהּ בֶּן זוֹמָא: שֶׁנֶּאֱמַר, לְמַעַן תִּזְכֹּר אֶת יוֹם צֵאתְךָ מֵאֶרֶץ מִצְרַיִם כֹּל יְמֵי חַיֶּיךָ, יְמֵי חַיֶּיךָ - הַיָמִים, כָּל יְמֵי חַיֶּיךָ - הַלֵּילוֹת. וַחֲכָמִים אוֹמְרִים: יְמֵי חַיֶּיךָ - הָעוֹלָם הַזֶּה, כֹּל יְמֵי חַיֶּיךָ - לְהָבִיא לִימוֹת הַמָשִׁיחַ.<br/><br/>
+בָּרוּךְ הַמָּקוֹם, בָּרוּךְ הוּא. בָּרוּךְ שֶׁנָּתַן תּוֹרָה לְעַמּוֹ יִשְׂרָאֵל, בָּרוּךְ הוּא.<br/><br/>
+כְּנֶגֶד אַרְבָּעָה בָנִים דִּבְּרָה תּוֹרָה. אֶחָד חָכָם, וְאֶחָד רָשָׁע, וְאֶחָד תָּם, וְאֶחָד שֶׁאֵינוֹ יוֹדֵעַ לִשְׁאוֹל.<br/><br/>
+חָכָם מָה הוּא אוֹמֵר? מַה הָעֵדוֹת וְהַחֻקִּים וְהַמִשְׁפָּטִים אֲשֶׁר צִוָּה יְיָ אֱלֹהֵינוּ אֶתְכֶם? וְאַף אַתָּה אֱמָר לוֹ כְּהִלְכוֹת הַפֶּסַח: אֵין מַפְטִירִין אַחַר הַפֶּסַח אֲפִיקוֹמָן.<br/><br/>
+רָשָׁע מָה הוּא אוֹמֵר? מָה הָעֲבֹדָה הַזֹּאת לָכֶם? לָכֶם - וְלֹא לוֹ. וּלְפִי שֶׁהוֹצִיא אֶת עַצְמוֹ מִן הַכְּלָל כָּפַר בְּעִקָּר. וְאַף אַתָּה הַקְהֵה אֶת שִנָּיו וֶאֱמֹר לוֹ: בַּעֲבוּר זֶה עָשָׂה יְיָ לִי בְּצֵאתִי מִמִּצְרָיִם. לִי - וְלֹא לוֹ. אִילּוּ הָיָה שָׁם, לֹא הָיָה נִגְאָל.<br/><br/>
+תָּם מָה הוּא אוֹמֵר? מַה זֹּאת? וְאָמַרְתָּ אֵלָיו: בְּחֹזֶק יָד הוֹצִיאָנוּ יְיָ מִמִּצְרָיִם, מִבֵּית עֲבָדִים.<br/><br/>
+וְשֶׁאֵינוֹ יוֹדֵעַ לִשְׁאוֹל - אַתְּ פְּתַח לוֹ, שֶׁנֶּאֱמַר: וְהִגַּדְתָּ לְבִנְךָ בַּיוֹם הַהוּא לֵאמֹר, בַּעֲבוּר זֶה עָשָׂה יְיָ לִי בְּצֵאתִי מִמִּצְרָיִם.</div>
+      </div>
+      <div class="page-image-wrap">
+        <img src="/images/4people.png" alt="ארבעת הבנים" class="page-img" onerror="this.parentElement.style.display='none'"/>
+      </div>
+      <div class="page-upload-section" data-pageid="arbaah">
         <label class="upload-zone page-upload-trigger">
           <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
           <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
         </label>
-        <div class="page-photo-grid" id="photos-afikoman"></div>
+        <div class="page-photo-grid" id="photos-arbaah"></div>
       </div>
     `
   },
   {
     id: 'manishtana',
-    number: '05',
-    title: 'מה נשתנה',
+    number: '08',
+    title: 'מָה נִשְׁתַּנָה',
     subtitle: 'הילדים שואלים',
     content: `
       <div class="text-block family-note">
         <span class="emoji-lead">👶</span> הילדים שואלים:<br/><br/>
-        מי שמתבייש זה לא נורא. ניר עד היום לא מוכן לשיר בקול רם.<br/><br/>
-        כאן נוכל לשתף זכרונות מהילדים כשהם שאלו את המה נשתנה לראשונה...
+        מי שמתבייש זה לא נורא. ניר עד היום לא מוכן לשיר בקול רם.
       </div>
       <div class="text-block">
-        <div class="prayer-text">
-          מַה נִּשְׁתַּנָּה הַלַּיְלָה הַזֶּה מִכָּל הַלֵּילוֹת?<br/>
-          שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין חָמֵץ וּמַצָּה,<br/>
-          הַלַּיְלָה הַזֶּה — כֻּלּוֹ מַצָּה.
-        </div>
+        <div class="prayer-text">מַה נִּשְׁתַּנָה הַלַּיְלָה הַזֶּה מִכָּל הַלֵּילוֹת?<br/><br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין חָמֵץ וּמַצָּה, הַלַּיְלָה הַזֶּה - כֻּלּוֹ מַצָּה!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין שְׁאָר יְרָקוֹת, - הַלַּיְלָה הַזֶּה מָרוֹר!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אֵין אָנוּ מַטְבִּילִין אֲפִילוּ פַּעַם אֶחָת, - הַלַּיְלָה הַזֶּה שְׁתֵּי פְעָמִים!<br/>
+שֶׁבְּכָל הַלֵּילוֹת אָנוּ אוֹכְלִין בֵּין יוֹשְׁבִין וּבֵין מְסֻבִּין, - הַלַּיְלָה הַזֶּה כֻּלָּנוּ מְסֻבִּין!</div>
       </div>
       <div class="page-upload-section" data-pageid="manishtana">
         <label class="upload-zone page-upload-trigger">
-          <span>📷</span><span>שתפו תמונה מהרגע הזה</span>
+          <span>📷</span><span>שתפו זכרונות מהמה נשתנה שלכם</span>
           <input type="file" accept="image/*" class="page-photo-input" style="display:none"/>
         </label>
         <div class="page-photo-grid" id="photos-manishtana"></div>
@@ -881,8 +898,8 @@ const PAGES = [
   },
   {
     id: 'makot',
-    number: '08',
-    title: 'עשר המכות',
+    number: '09',
+    title: 'עֶשֶׂר הַמַּכּוֹת',
     subtitle: 'המכות של משפחת ויתקון',
     content: `
       <div class="text-block">
@@ -916,6 +933,7 @@ const PAGES = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  STATE
 //  STATE
 // ══════════════════════════════════════════════════════════════════════════════
 let state = {
